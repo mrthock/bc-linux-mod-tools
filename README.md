@@ -34,7 +34,7 @@ sudo apt install unzip unrar libarchive-tools 7zip python3 timeshift
 Clone the repo and make the scripts executable:
 
 ```bash
-git clone https://github.com/yourname/bc-linux-mod-tools.git
+git clone https://github.com/mrthock/bc-linux-mod-tools.git
 cd bc-linux-mod-tools
 chmod +x bc_install_mod.sh fix_bc_case.sh
 ```
