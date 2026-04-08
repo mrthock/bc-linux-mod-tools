@@ -64,11 +64,11 @@ export STBC_DIR="/path/to/Star Trek Bridge Commander"
 What it does:
 1. Extracts the archive to `~/BCMods/<mod-name>/` (skips if already extracted)
 2. Detects KM vs Remastered version subdirs — prompts if both are present
-3. Creates a **Timeshift btrfs snapshot** before touching the game (requires sudo)
+3. Creates a **Timeshift btrfs snapshot** before touching the game, if Timeshift is installed (requires sudo)
 4. Copies `data/`, `scripts/`, `sfx/`, `py/` into the game directory (lowercased)
 5. Runs `fix_bc_case.sh` to merge any duplicate case-variant folders
 
-If sudo is unavailable (e.g. running non-interactively), skip the snapshot:
+Timeshift snapshots are skipped automatically if Timeshift isn't installed. To force-skip even when it is installed:
 ```bash
 ./bc_install_mod.sh --no-snapshot ~/Downloads/somemod.zip
 ```

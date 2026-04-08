@@ -139,13 +139,15 @@ else
 fi
 echo ""
 
-# ── timeshift snapshot ─────────────────────────────────────────────────────────
+# ── timeshift snapshot (only if timeshift is installed) ───────────────────────
 
 if [ "$SKIP_SNAPSHOT" -eq 1 ]; then
     echo "=== Skipping Timeshift snapshot ==="
-else
+elif command -v timeshift &>/dev/null; then
     echo "=== Creating Timeshift snapshot ==="
     sudo timeshift --create --comments "BC mod install: $MOD_NAME" --tags O
+else
+    echo "=== Timeshift not found — skipping snapshot ==="
 fi
 echo ""
 
