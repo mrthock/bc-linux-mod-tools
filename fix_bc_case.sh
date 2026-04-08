@@ -61,13 +61,19 @@ fix_case() {
             chmod -R u+w "$lower"
             cp -rv "$upper/." "$lower/"
             rm -rf "$upper"
-            [ "$name_lower" != "$target" ] && mv "$lower" "$parent/$target" && echo "  Renamed to $target"
+            if [ "$name_lower" != "$target" ]; then
+                mv "$lower" "$parent/$target"
+                echo "  Renamed to $target"
+            fi
         else
             echo "  Merging $name_lower -> $name_upper"
             chmod -R u+w "$upper"
             cp -rv "$lower/." "$upper/"
             rm -rf "$lower"
-            [ "$name_upper" != "$target" ] && mv "$upper" "$parent/$target" && echo "  Renamed to $target"
+            if [ "$name_upper" != "$target" ]; then
+                mv "$upper" "$parent/$target"
+                echo "  Renamed to $target"
+            fi
         fi
     fi
 }
