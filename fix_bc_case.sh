@@ -74,11 +74,12 @@ fix_case() {
 
 # ── known case conflict pairs ──────────────────────────────────────────────────
 
-fix_case "$GAME/scripts"       "ships"      "Ships"      "ships"
-fix_case "$GAME/scripts/ships" "hardpoints" "Hardpoints" "hardpoints"
-fix_case "$GAME/data/Icons"    "ships"      "Ships"      "ships"
-fix_case "$GAME/data/Models"   "ships"      "Ships"      "Ships"
-fix_case "$GAME/data"          "animations" "Animations" "animations"
-fix_case "$GAME/data"          "textures"   "Textures"   "Textures"
+fix_case "$GAME/scripts"              "ships"      "Ships"      "ships"
+fix_case "$GAME/scripts/ships"        "hardpoints" "Hardpoints" "hardpoints"
+fix_case "$GAME/scripts/Custom"       "ships"      "Ships"      "Ships"
+fix_case "$GAME/data/Icons"           "ships"      "Ships"      "ships"
+fix_case "$GAME/data/Models"          "ships"      "Ships"      "Ships"
+fix_case "$GAME/data"                 "animations" "Animations" "animations"
+fix_case "$GAME/data"                 "textures"   "Textures"   "Textures"
 
 echo "All done!"
