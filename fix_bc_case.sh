@@ -82,6 +82,7 @@ fix_case() {
 
 fix_case "$GAME/scripts"              "ships"      "Ships"      "ships"
 fix_case "$GAME/scripts"              "custom"     "Custom"     "Custom"
+fix_case "$GAME/scripts"              "tactical"   "Tactical"   "Tactical"
 fix_case "$GAME/scripts/ships"        "hardpoints" "Hardpoints" "hardpoints"
 fix_case "$GAME/scripts/Custom"       "ships"      "Ships"      "Ships"
 fix_case "$GAME/scripts/Custom"       "autoload"   "Autoload"   "Autoload"
