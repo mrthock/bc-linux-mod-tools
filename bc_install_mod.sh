@@ -172,5 +172,9 @@ echo ""
 echo "=== Running case fix ==="
 bash "$SCRIPT_DIR/fix_bc_case.sh" "$GAME"
 
+echo "=== Applying patches ==="
+cp -f "$SCRIPT_DIR/patches/SpeciesToTorp.py" "$GAME/scripts/Multiplayer/SpeciesToTorp.py"
+echo "  Patched Multiplayer/SpeciesToTorp.py"
+
 echo ""
 echo "Done! '$MOD_NAME' installed."
