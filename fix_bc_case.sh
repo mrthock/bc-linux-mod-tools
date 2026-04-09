@@ -81,10 +81,14 @@ fix_case() {
 # ── known case conflict pairs ──────────────────────────────────────────────────
 
 fix_case "$GAME/scripts"              "ships"      "Ships"      "ships"
+fix_case "$GAME/scripts"              "custom"     "Custom"     "Custom"
 fix_case "$GAME/scripts/ships"        "hardpoints" "Hardpoints" "hardpoints"
 fix_case "$GAME/scripts/Custom"       "ships"      "Ships"      "Ships"
+fix_case "$GAME/scripts/Custom"       "autoload"   "Autoload"   "Autoload"
+fix_case "$GAME/scripts/Custom"       "carriers"   "Carriers"   "Carriers"
 fix_case "$GAME/data/Icons"           "ships"      "Ships"      "ships"
 fix_case "$GAME/data/Models"          "ships"      "Ships"      "Ships"
+fix_case "$GAME/data"                 "models"     "Models"     "Models"
 fix_case "$GAME/data"                 "animations" "Animations" "animations"
 fix_case "$GAME/data"                 "textures"   "Textures"   "Textures"
 
