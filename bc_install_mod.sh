@@ -145,7 +145,9 @@ if [ "$SKIP_SNAPSHOT" -eq 1 ]; then
     echo "=== Skipping Timeshift snapshot ==="
 elif command -v timeshift &>/dev/null; then
     echo "=== Creating Timeshift snapshot ==="
-    sudo timeshift --create --comments "BC mod install: $MOD_NAME" --tags O
+    if ! sudo timeshift --create --comments "BC mod install: $MOD_NAME" --tags O; then
+        die "Timeshift snapshot failed — aborting install. Fix Timeshift or use --no-snapshot to skip."
+    fi
 else
     echo "=== Timeshift not found — skipping snapshot ==="
 fi
@@ -176,5 +178,83 @@ echo "=== Applying patches ==="
 cp -f "$SCRIPT_DIR/patches/SpeciesToTorp.py" "$GAME/scripts/Multiplayer/SpeciesToTorp.py"
 echo "  Patched Multiplayer/SpeciesToTorp.py"
 
+# ── post-install validation ────────────────────────────────────────────────────
+
+echo ""
+echo "=== Validating installed mod ==="
+
+WARNINGS=0
+
+# Collect newly installed ship scripts and hardpoints from the mod's content root
+SHIP_SCRIPTS=()
+HARDPOINT_FILES=()
+for src_dir in scripts Scripts; do
+    candidate="$CONTENT_ROOT/$src_dir"
+    [ -d "$candidate" ] || continue
+    while IFS= read -r -d '' f; do
+        SHIP_SCRIPTS+=("$f")
+    done < <(find "$candidate/ships" -maxdepth 1 -name "*.py" -print0 2>/dev/null)
+    while IFS= read -r -d '' f; do
+        HARDPOINT_FILES+=("$f")
+    done < <(find "$candidate/ships/Hardpoints" "$candidate/ships/hardpoints" -name "*.py" -print0 2>/dev/null)
+done
+# Also check py/ directory
+for src_dir in py; do
+    candidate="$CONTENT_ROOT/$src_dir"
+    [ -d "$candidate" ] || continue
+    while IFS= read -r -d '' f; do
+        SHIP_SCRIPTS+=("$f")
+    done < <(find "$candidate/ships" -maxdepth 1 -name "*.py" -print0 2>/dev/null)
+    while IFS= read -r -d '' f; do
+        HARDPOINT_FILES+=("$f")
+    done < <(find "$candidate/ships/Hardpoints" "$candidate/ships/hardpoints" -name "*.py" -print0 2>/dev/null)
+done
+
+# 1. Check that model NIF paths referenced by ship scripts actually exist
+if [ ${#SHIP_SCRIPTS[@]} -gt 0 ]; then
+    while IFS= read -r nif_path; do
+        # nif_path is like "data/Models/Ships/ACMP/Akira.NIF"
+        full="$GAME/$nif_path"
+        if ! find "$(dirname "$full")" -maxdepth 1 -iname "$(basename "$full")" 2>/dev/null | grep -q .; then
+            echo "  WARNING: Missing model file: $nif_path"
+            WARNINGS=$((WARNINGS + 1))
+        fi
+    done < <(grep -h "FilenameHigh" "${SHIP_SCRIPTS[@]}" 2>/dev/null \
+        | grep -oP '(?<="data/)[^"]+' \
+        | sed 's|^|data/|' \
+        | sort -u)
+fi
+
+# 2. Check that torpedo/projectile modules referenced in hardpoints are installed
+PROJ_DIR="$GAME/scripts/Tactical/Projectiles"
+if [ ${#HARDPOINT_FILES[@]} -gt 0 ]; then
+    while IFS= read -r mod; do
+        [ -z "$mod" ] && continue
+        if ! ls "$PROJ_DIR/$mod.py" "$PROJ_DIR/$mod.pyc" &>/dev/null 2>&1 \
+           && ! ls "$PROJ_DIR/$mod" &>/dev/null 2>&1; then
+            echo "  WARNING: Missing torpedo module: Tactical.Projectiles.$mod"
+            WARNINGS=$((WARNINGS + 1))
+        fi
+    done < <(grep -h "SetModuleName\|SetTorpedoScript" "${HARDPOINT_FILES[@]}" 2>/dev/null \
+        | grep -oP '(?<=Tactical\.Projectiles\.)[^"]+' \
+        | sort -u)
+fi
+
+if [ "$WARNINGS" -eq 0 ]; then
+    echo "  All model paths and torpedo modules verified OK."
+else
+    echo ""
+    echo "  $WARNINGS warning(s) above — the mod may crash or show missing content in-game."
+    echo "  You may need to install additional dependency mods first."
+fi
+
 echo ""
 echo "Done! '$MOD_NAME' installed."
+
+# ── cleanup ───────────────────────────────────────────────────────────────────
+
+read -rp "Delete archive '$BASENAME'? [y/N]: " DEL_CHOICE
+if [[ "${DEL_CHOICE,,}" == "y" ]]; then
+    rm -f "$ARCHIVE"
+    echo "Deleted $BASENAME."
+fi
